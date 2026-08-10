@@ -564,6 +564,7 @@ function renderDay(){
         (editing?'<div class="surah-tools">'+
           '<button class="stool up"'+(idx===0?" disabled":"")+'>↑</button>'+
           '<button class="stool down"'+(idx===g.surahs.length-1?" disabled":"")+'>↓</button>'+
+          '<button class="stool ed">✎</button>'+
           '<button class="stool del">×</button></div>':'')+
         '</div>'+
         ((done&&!editing)?'<div class="method-row">'+
@@ -574,6 +575,7 @@ function renderDay(){
         el.querySelector(".surah-main").style.cursor="default";
         el.querySelector(".up").onclick=()=>moveSurah(gid,idx,-1);
         el.querySelector(".down").onclick=()=>moveSurah(gid,idx,1);
+        el.querySelector(".ed").onclick=()=>openSurahModal(gid,s.id);
         el.querySelector(".del").onclick=()=>{
           askConfirm("„"+s.name+"“ aus der Gruppe entfernen?",()=>delSurah(gid,s.id));
         };
@@ -751,25 +753,52 @@ function moveGroup(i,dir){
 
 // ---- Surah modal ----
 let scopeMode="full";
-function openSurahModal(preselectGroup){
+let editingSurah=null;   // {gid, sid} beim Bearbeiten
+function openSurahModal(preselectGroup,sid){
+  editingSurah=null;
+  let entry=null;
+  if(sid){
+    const g0=getGroup(preselectGroup);
+    entry=g0?g0.surahs.find(x=>x.id===sid):null;
+    if(entry)editingSurah={gid:preselectGroup,sid:sid};
+  }
   const gsel=document.getElementById("surahGroupSelect");gsel.innerHTML="";
   state.groups.forEach(g=>{const o=document.createElement("option");o.value=g.id;o.textContent=g.name;gsel.appendChild(o);});
   if(preselectGroup)gsel.value=preselectGroup;
   const pick=document.getElementById("surahPickSelect");pick.innerHTML="";
   SURAH_DB.forEach(s=>{const o=document.createElement("option");o.value=s[0];o.textContent=s[0]+". "+s[1]+" — "+s[2];pick.appendChild(o);});
   const c=document.createElement("option");c.value="custom";c.textContent="✎ Eigener Eintrag…";pick.appendChild(c);
-  pick.value=1;
-  scopeMode="full";
-  document.querySelectorAll("#scopeSeg button").forEach(b=>b.classList.toggle("active",b.dataset.scope==="full"));
-  document.getElementById("vFromInput").value="";
-  document.getElementById("vToInput").value="";
-  document.getElementById("surahNameInput").value="";
-  document.getElementById("surahArInput").value="";
+
+  document.getElementById("surahModalTitle").textContent=entry?"Surah bearbeiten":"Surah hinzufügen";
+  document.getElementById("saveSurahBtn").textContent=entry?"Speichern":"Hinzufügen";
   document.getElementById("surahError").textContent="";
-  applyPick();
+
+  if(entry){
+    pick.value=entry.n?String(entry.n):"custom";
+    scopeMode=entry.vFrom?"part":"full";
+  }else{
+    pick.value="1";
+    scopeMode="full";
+  }
+  document.querySelectorAll("#scopeSeg button").forEach(b=>b.classList.toggle("active",b.dataset.scope===scopeMode));
+  applyPick(!!entry);
+
+  // Werte NACH applyPick setzen, damit sie nicht überschrieben werden
+  if(entry){
+    document.getElementById("vFromInput").value=entry.vFrom||"";
+    document.getElementById("vToInput").value=entry.vTo||"";
+    document.getElementById("surahPagesInput").value=(entry.p!=null?entry.p:"");
+    document.getElementById("surahNameInput").value=entry.n?"":(entry.name||"");
+    document.getElementById("surahArInput").value=entry.n?"":(entry.ar||"");
+  }else{
+    document.getElementById("vFromInput").value="";
+    document.getElementById("vToInput").value="";
+    document.getElementById("surahNameInput").value="";
+    document.getElementById("surahArInput").value="";
+  }
   document.getElementById("surahModal").classList.add("open");
 }
-function applyPick(){
+function applyPick(keepPages){
   const v=document.getElementById("surahPickSelect").value;
   const isCustom=(v==="custom");
   document.getElementById("customNameField").style.display=isCustom?"":"none";
@@ -779,20 +808,20 @@ function applyPick(){
   const pHint=document.getElementById("pagesHint");
   const pIn=document.getElementById("surahPagesInput");
   if(isCustom){
-    hint.textContent="";hint.className="hint";
+    hint.textContent="";
     pHint.textContent="Bitte selbst eintragen.";
-    if(scopeMode==="full")pIn.value="";
+    if(!keepPages&&scopeMode==="full")pIn.value="";
   }else{
     const s=surahByNum(parseInt(v));
     if(s){
       if(scopeMode==="part"){
-        hint.textContent=s.name+" hat "+s.ayat+" Verse.";hint.className="hint";
+        hint.textContent=s.name+" hat "+s.ayat+" Verse.";
         pHint.textContent="Bei Teilbereichen bitte selbst schätzen (ganze Surah ≈ "+fmtPages(s.p)+" Seiten).";
-        pIn.value="";
+        if(!keepPages)pIn.value="";
       }else{
-        hint.textContent="";hint.className="hint";
+        hint.textContent="";
         pHint.textContent="Automatisch eingesetzt, überschreibbar.";
-        pIn.value=s.p;
+        if(!keepPages)pIn.value=s.p;
       }
     }
   }
@@ -831,7 +860,20 @@ document.getElementById("saveSurahBtn").onclick=()=>{
     if(vFrom<1||vTo<vFrom){fail("Ungültiger Versbereich.");return;}
     if(maxAyat&&vTo>maxAyat){fail(name+" hat nur "+maxAyat+" Verse.");return;}
   }
-  g.surahs.push({id:"s"+Date.now()+Math.random().toString(36).slice(2,6),n:num,name,ar,p,vFrom,vTo});
+  if(editingSurah){
+    const oldG=getGroup(editingSurah.gid);
+    const item=oldG?oldG.surahs.find(x=>x.id===editingSurah.sid):null;
+    if(item){
+      item.n=num;item.name=name;item.ar=ar;item.p=p;item.vFrom=vFrom;item.vTo=vTo;
+      if(oldG&&oldG.id!==g.id){
+        oldG.surahs=oldG.surahs.filter(x=>x.id!==item.id);
+        g.surahs.push(item);
+      }
+    }
+    editingSurah=null;
+  }else{
+    g.surahs.push({id:"s"+Date.now()+Math.random().toString(36).slice(2,6),n:num,name,ar,p,vFrom,vTo});
+  }
   save();closeModals();render();
 };
 
@@ -854,7 +896,10 @@ document.getElementById("saveGroupBtn").onclick=()=>{
 };
 document.getElementById("addGroupBtn").onclick=()=>openGroupModal(null);
 
-function closeModals(){document.querySelectorAll(".modal-bg").forEach(m=>m.classList.remove("open"));}
+function closeModals(){
+  document.querySelectorAll(".modal-bg").forEach(m=>m.classList.remove("open"));
+  editingSurah=null;editingGroupId=null;
+}
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModals);
 document.querySelectorAll(".modal-bg").forEach(m=>m.onclick=e=>{if(e.target===m)closeModals();});
 
