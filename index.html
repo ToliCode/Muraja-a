@@ -180,8 +180,8 @@
     font:inherit;font-size:15px;padding:13px;border-radius:11px;}
   .field input:focus,.field select:focus{outline:none;border-color:var(--emerald);}
   .seg{display:flex;gap:6px;}
-  .seg button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--text-dim);
-    font:inherit;font-size:14px;font-weight:600;padding:11px;border-radius:10px;cursor:pointer;}
+  .seg button{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--text-dim);
+    font:inherit;font-size:13px;font-weight:600;padding:11px 4px;border-radius:10px;cursor:pointer;}
   .seg button.active{background:var(--surface-2);border-color:var(--emerald);color:var(--text);}
   .row2{display:flex;gap:10px;}
   .row2 .field{flex:1;}
@@ -261,7 +261,7 @@
 <div class="modal-bg" id="surahModal">
   <div class="modal">
     <h3 id="surahModalTitle">Surah hinzufügen</h3>
-    <div class="field">
+    <div class="field" id="singlePickField">
       <label>Surah wählen</label>
       <select id="surahPickSelect"></select>
     </div>
@@ -278,6 +278,27 @@
       <div class="seg" id="scopeSeg">
         <button data-scope="full" class="active">Ganze Surah</button>
         <button data-scope="part">Nur Verse</button>
+        <button data-scope="range" id="scopeRangeBtn">Mehrere</button>
+      </div>
+    </div>
+    <div id="rangeFields" style="display:none;">
+      <div class="field">
+        <label>Bereich schnell ankreuzen</label>
+        <div class="range-row">
+          <select id="surahFromSelect"></select>
+          <span class="range-sep">bis</span>
+          <select id="surahToSelect"></select>
+        </div>
+        <button class="range-apply" id="rangeApplyBtn">Bereich hinzufügen</button>
+      </div>
+      <div class="field">
+        <label>Suren auswählen</label>
+        <input type="text" id="multiSearch" placeholder="Suchen…" autocomplete="off">
+        <div class="multi-list" id="multiList"></div>
+        <div class="multi-foot">
+          <span class="hint" id="rangeHint"></span>
+          <button class="clear-sel" id="clearSelBtn">Auswahl leeren</button>
+        </div>
       </div>
     </div>
     <div id="verseFields" style="display:none;">
@@ -293,7 +314,7 @@
       </div>
       <div class="hint" id="verseHint"></div>
     </div>
-    <div class="field">
+    <div class="field" id="pagesField">
       <label>Seiten im Mushaf (ca.)</label>
       <input type="number" id="surahPagesInput" inputmode="decimal" step="0.5" min="0" placeholder="z. B. 8,5">
       <div class="hint" id="pagesHint"></div>
@@ -769,6 +790,17 @@ function openSurahModal(preselectGroup,sid){
   SURAH_DB.forEach(s=>{const o=document.createElement("option");o.value=s[0];o.textContent=s[0]+". "+s[1]+" — "+s[2];pick.appendChild(o);});
   const c=document.createElement("option");c.value="custom";c.textContent="✎ Eigener Eintrag…";pick.appendChild(c);
 
+  // Bereichs-Dropdowns
+  ["surahFromSelect","surahToSelect"].forEach(id=>{
+    const sel=document.getElementById(id);sel.innerHTML="";
+    SURAH_DB.forEach(s=>{const o=document.createElement("option");o.value=s[0];o.textContent=s[0]+". "+s[1];sel.appendChild(o);});
+  });
+  document.getElementById("surahFromSelect").value="114";
+  document.getElementById("surahToSelect").value="90";
+
+  // "Von–bis" nur beim Hinzufügen anbieten
+  document.getElementById("scopeRangeBtn").style.display=entry?"none":"";
+
   document.getElementById("surahModalTitle").textContent=entry?"Surah bearbeiten":"Surah hinzufügen";
   document.getElementById("saveSurahBtn").textContent=entry?"Speichern":"Hinzufügen";
   document.getElementById("surahError").textContent="";
@@ -801,9 +833,14 @@ function openSurahModal(preselectGroup,sid){
 function applyPick(keepPages){
   const v=document.getElementById("surahPickSelect").value;
   const isCustom=(v==="custom");
-  document.getElementById("customNameField").style.display=isCustom?"":"none";
-  document.getElementById("customArField").style.display=isCustom?"":"none";
+  const isRange=(scopeMode==="range");
+  document.getElementById("singlePickField").style.display=isRange?"none":"";
+  document.getElementById("customNameField").style.display=(!isRange&&isCustom)?"":"none";
+  document.getElementById("customArField").style.display=(!isRange&&isCustom)?"":"none";
+  document.getElementById("rangeFields").style.display=isRange?"":"none";
   document.getElementById("verseFields").style.display=(scopeMode==="part")?"":"none";
+  document.getElementById("pagesField").style.display=isRange?"none":"";
+  if(isRange){updateRangeHint();return;}
   const hint=document.getElementById("verseHint");
   const pHint=document.getElementById("pagesHint");
   const pIn=document.getElementById("surahPagesInput");
@@ -826,7 +863,26 @@ function applyPick(keepPages){
     }
   }
 }
-document.getElementById("surahPickSelect").addEventListener("change",applyPick);
+function rangeList(){
+  const a=parseInt(document.getElementById("surahFromSelect").value);
+  const b=parseInt(document.getElementById("surahToSelect").value);
+  if(isNaN(a)||isNaN(b))return[];
+  const out=[];
+  if(a<=b){for(let i=a;i<=b;i++)out.push(surahByNum(i));}
+  else{for(let i=a;i>=b;i--)out.push(surahByNum(i));}
+  return out.filter(Boolean);
+}
+function updateRangeHint(){
+  const list=rangeList();
+  const h=document.getElementById("rangeHint");
+  if(!list.length){h.textContent="";return;}
+  const pages=list.reduce((s,x)=>s+x.p,0);
+  h.textContent=list.length+" Suren · ca. "+fmtPages(pages)+" Seiten · Reihenfolge: "+
+    list[0].name+" → "+list[list.length-1].name;
+}
+document.getElementById("surahPickSelect").addEventListener("change",()=>applyPick());
+document.getElementById("surahFromSelect").addEventListener("change",updateRangeHint);
+document.getElementById("surahToSelect").addEventListener("change",updateRangeHint);
 document.querySelectorAll("#scopeSeg button").forEach(b=>{
   b.onclick=()=>{scopeMode=b.dataset.scope;
     document.querySelectorAll("#scopeSeg button").forEach(x=>x.classList.toggle("active",x===b));
@@ -842,6 +898,18 @@ document.getElementById("saveSurahBtn").onclick=()=>{
   if(!g){fail("Bitte zuerst eine Gruppe anlegen.");return;}
   const pRaw=parseFloat(String(document.getElementById("surahPagesInput").value).replace(",","."));
   const p=isNaN(pRaw)?null:pRaw;
+
+  // Mehrere Suren auf einmal
+  if(scopeMode==="range"){
+    const list=rangeList();
+    if(!list.length){fail("Bitte gültigen Bereich wählen.");return;}
+    list.forEach(s=>{
+      g.surahs.push({id:"s"+Date.now()+Math.random().toString(36).slice(2,8),
+        n:s.n,name:s.name,ar:s.ar,p:s.p,vFrom:null,vTo:null});
+    });
+    save();closeModals();render();return;
+  }
+
   let name,ar,num=null,maxAyat=null;
   if(pv==="custom"){
     name=document.getElementById("surahNameInput").value.trim();
