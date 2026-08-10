@@ -34,7 +34,7 @@
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:560px;margin:0 auto;padding:20px 16px 48px;}
-
+ 
   /* Header */
   header{margin-bottom:22px;}
   .eyebrow{
@@ -48,7 +48,7 @@
   .date-greg{font-size:14px;color:var(--text-dim);}
   .date-hijri{font-size:15px;color:var(--gold);font-weight:600;direction:rtl;text-align:left;}
   .date-hijri .latin{direction:ltr;color:var(--sand-dim);font-weight:400;}
-
+ 
   /* Today card */
   .today{
     background:linear-gradient(160deg,var(--surface-2),var(--surface));
@@ -71,13 +71,13 @@
     font-size:12px;color:var(--sand-dim);margin-top:10px;display:flex;align-items:center;gap:6px;
   }
   .dot{width:6px;height:6px;border-radius:99px;background:var(--gold);}
-
+ 
   /* Progress */
   .progress-wrap{margin:16px 0 4px;}
   .progress-bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;}
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--emerald-soft));border-radius:99px;transition:width .3s;width:0;}
   .progress-text{font-size:12px;color:var(--text-dim);margin-top:7px;display:flex;justify-content:space-between;}
-
+ 
   /* Surah list */
   .surah-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
   .surah{
@@ -104,7 +104,7 @@
     padding:4px 8px;cursor:pointer;opacity:.5;
   }
   .surah-del:active{opacity:1;color:#e07a6b;}
-
+ 
   /* Add */
   .add-row{margin-top:12px;}
   .add-btn{
@@ -113,7 +113,7 @@
     padding:13px;border-radius:12px;cursor:pointer;transition:.15s;
   }
   .add-btn:active{background:var(--surface);}
-
+ 
   /* Groups section */
   .section-head{
     display:flex;justify-content:space-between;align-items:baseline;
@@ -129,7 +129,7 @@
   .gtab.active{background:var(--surface-2);border-color:var(--emerald);color:var(--text);}
   .gtab .count{font-size:11px;color:var(--text-dim);background:var(--bg);padding:1px 7px;border-radius:99px;}
   .gtab.add-group{border-style:dashed;color:var(--sand-dim);}
-
+ 
   /* Modal */
   .modal-bg{
     position:fixed;inset:0;background:rgba(4,12,10,.7);backdrop-filter:blur(4px);
@@ -156,18 +156,18 @@
   }
   .btn-primary{background:var(--emerald);color:#06241f;}
   .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text-dim);}
-
+ 
   .reset-row{margin-top:30px;text-align:center;}
   .reset-row button{background:none;border:none;color:var(--text-dim);font:inherit;font-size:13px;cursor:pointer;opacity:.6;}
   .empty{text-align:center;color:var(--text-dim);font-size:14px;padding:24px 0;}
-
+ 
   /* Day badge */
   .day-head{display:flex;align-items:center;gap:10px;margin-top:12px;}
   .day-badge{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:99px;}
   .day-badge.today{background:var(--emerald);color:#06241f;}
   .day-badge.other{background:var(--surface-2);color:var(--sand-dim);border:1px solid var(--line);}
   .jump-today{background:transparent;border:1px solid var(--line);color:var(--emerald-soft);font:inherit;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;cursor:pointer;}
-
+ 
   /* Calendar */
   .cal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:18px;}
   .cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -179,22 +179,26 @@
   .cal-modes{display:flex;gap:6px;margin-bottom:12px;}
   .cal-modes button{flex:1;background:transparent;border:1px solid var(--line);color:var(--text-dim);font:inherit;font-size:13px;font-weight:600;padding:8px;border-radius:9px;cursor:pointer;transition:.15s;}
   .cal-modes button.active{background:var(--surface-2);border-color:var(--emerald);color:var(--text);}
-
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-  .cal-dow{text-align:center;font-size:10px;color:var(--text-dim);font-weight:600;padding:2px 0 4px;}
-  .cal-cell{aspect-ratio:1;border-radius:9px;border:1px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:.12s;background:var(--bg);}
-  .cal-cell.empty{background:transparent;cursor:default;}
+ 
+  .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;width:100%;}
+  .cal-dow{text-align:center;font-size:10px;color:var(--text-dim);font-weight:600;padding:2px 0 4px;min-width:0;}
+  .cal-cell{
+    min-width:0;min-height:52px;box-sizing:border-box;
+    border-radius:9px;border:1px solid transparent;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    padding:4px 2px;cursor:pointer;transition:.12s;background:var(--bg);overflow:hidden;
+  }
+  .cal-cell.empty{background:transparent;cursor:default;border-color:transparent;}
+  .cal-cell .gtag{font-size:7px;font-weight:700;color:var(--sand-dim);letter-spacing:.02em;text-transform:uppercase;line-height:1;height:8px;}
   .cal-cell .hd{font-size:13px;font-weight:600;color:var(--text);line-height:1;}
-  .cal-cell .gd{font-size:8px;color:var(--text-dim);margin-top:1px;}
-  .cal-cell .gtag{position:absolute;top:3px;left:0;right:0;text-align:center;font-size:7px;font-weight:700;color:var(--sand-dim);letter-spacing:.03em;text-transform:uppercase;}
-  .cal-cell .stat{width:5px;height:5px;border-radius:99px;position:absolute;bottom:5px;}
+  .cal-cell .gd{font-size:8px;color:var(--text-dim);line-height:1;}
+  .cal-cell .stat{width:5px;height:5px;border-radius:99px;margin-top:1px;background:transparent;}
   .cal-cell .stat.done{background:var(--emerald);}
   .cal-cell .stat.partial{background:var(--gold);}
-  .cal-cell .stat.none{background:transparent;}
   .cal-cell.today{border-color:var(--emerald);}
-  .cal-cell.sel{background:var(--surface-2);border-color:var(--emerald-soft);box-shadow:0 0 0 1px var(--emerald-soft) inset;}
+  .cal-cell.sel{background:var(--surface-2);border-color:var(--emerald-soft);}
   .cal-cell.sel .hd{color:var(--emerald-soft);}
-
+ 
   /* Week list */
   .cal-week{display:flex;flex-direction:column;gap:6px;}
   .wrow{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:11px 13px;cursor:pointer;transition:.12s;}
@@ -210,7 +214,7 @@
   .wrow .wstat.partial{background:rgba(217,177,78,.15);color:var(--gold);}
   .wrow .wstat.none{background:var(--surface);color:var(--text-dim);}
   .wrow .wtoday-tag{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--emerald);}
-
+ 
   .cal-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:11px;color:var(--text-dim);}
   .cal-legend span{display:flex;align-items:center;gap:5px;}
   .cal-legend .lg{width:8px;height:8px;border-radius:99px;}
@@ -233,7 +237,7 @@
       <div class="date-greg" id="dateGreg"></div>
     </div>
   </header>
-
+ 
   <!-- Calendar -->
   <div class="cal">
     <div class="cal-top">
@@ -252,7 +256,7 @@
       <span><i class="lg none"></i>offen</span>
     </div>
   </div>
-
+ 
   <div class="today">
     <div class="today-top">
       <div class="today-label" id="todayLabel">An diesem Tag</div>
@@ -261,26 +265,26 @@
     <div class="group-name" id="todayGroupName"></div>
     <div class="group-meta" id="todayGroupMeta"></div>
     <div class="suggest-note" id="suggestNote"><span class="dot"></span><span></span></div>
-
+ 
     <div class="progress-wrap">
       <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
       <div class="progress-text"><span id="progLabel">0 / 0</span><span id="progPct">0%</span></div>
     </div>
-
+ 
     <div class="surah-list" id="surahList"></div>
     <div class="add-row">
       <button class="add-btn" id="addSurahBtn">+ Surah hinzufügen</button>
     </div>
   </div>
-
+ 
   <div class="section-head"><h2>Gruppen</h2></div>
   <div class="group-tabs" id="groupTabs"></div>
-
+ 
   <div class="reset-row">
     <button id="resetBtn">Häkchen für diesen Tag zurücksetzen</button>
   </div>
 </div>
-
+ 
 <!-- Add Surah Modal -->
 <div class="modal-bg" id="surahModal">
   <div class="modal">
@@ -311,7 +315,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- Add Group Modal -->
 <div class="modal-bg" id="groupModal">
   <div class="modal">
@@ -326,10 +330,10 @@
     </div>
   </div>
 </div>
-
+ 
 <script>
 const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#06241f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-
+ 
 // ---- Full Surah DB (Madinah Mushaf, pages approx.) ----
 // [number, name, arabic, pages]
 const SURAH_DB = [
@@ -373,7 +377,7 @@ const SURAH_DB = [
   [112,"Al-Ikhlas","الإخلاص",0.2],[113,"Al-Falaq","الفلق",0.3],[114,"An-Nas","الناس",0.3]
 ];
 function surahByNum(n){const r=SURAH_DB.find(s=>s[0]===n);return r?{n:r[0],name:r[1],ar:r[2],p:r[3]}:null;}
-
+ 
 // ---- Default data ----
 const GROUP_A = [
   {n:114,name:"An-Nas",ar:"الناس",p:0.3},{n:113,name:"Al-Falaq",ar:"الفلق",p:0.3},
@@ -394,7 +398,7 @@ const GROUP_B = [
   {n:53,name:"An-Najm",ar:"النجم",p:2.5},{n:56,name:"Al-Waqi'ah",ar:"الواقعة",p:2.5},
   {n:61,name:"As-Saff",ar:"الصف",p:1.5},{n:78,name:"An-Naba'",ar:"النبأ",p:2}
 ];
-
+ 
 const DEFAULT_STATE = {
   groups:[
     {id:"a",name:"Tag A",cycleSlot:0,surahs:GROUP_A.map((s,i)=>({id:"a"+i,...s}))},
@@ -404,17 +408,17 @@ const DEFAULT_STATE = {
   manualGroup:{},   // { "YYYY-MM-DD": groupId }
   activeTab:"a"
 };
-
+ 
 const KEY="quranRevision_v1";
 let state;
 function load(){try{state=JSON.parse(localStorage.getItem(KEY))||structuredClone(DEFAULT_STATE);}catch(e){state=structuredClone(DEFAULT_STATE);}}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
-
+ 
 // ---- Dates ----
 let selectedDate=new Date(); // currently viewed day
 let calMode="month";         // "month" | "week"
 let calCursor=new Date();    // month being shown in grid
-
+ 
 function keyOf(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function todayKey(){return keyOf(new Date());}
 function selKey(){return keyOf(selectedDate);}
@@ -434,7 +438,7 @@ function renderDates(){
   const h=hijriParts(d);
   document.getElementById("dateHijri").innerHTML=h.ar+' <span class="latin">· '+h.latin+'</span>';
 }
-
+ 
 // ---- Suggested group by date (alternating) ----
 function dayIndex(d){return Math.floor((d.getTime()-d.getTimezoneOffset()*60000)/86400000);}
 function suggestedGroupIdFor(d){
@@ -464,7 +468,7 @@ function dayStatus(d){
   if(done>=g.surahs.length)return "done";
   return "partial";
 }
-
+ 
 // ---- Render ----
 function render(){
   renderDates();
@@ -474,13 +478,13 @@ function render(){
   const suggestedId=suggestedGroupId();
   const grp=getGroup(activeId)||state.groups[0];
   const viewingToday=isSameDay(selectedDate,new Date());
-
+ 
   // today badge / jump button
   const badge=document.getElementById("dayBadge");
   if(viewingToday){badge.textContent="Heute";badge.className="day-badge today";}
   else{badge.textContent=selectedDate>new Date()?"Zukunft":"Vergangen";badge.className="day-badge other";}
   document.getElementById("jumpToday").style.display=viewingToday?"none":"inline-flex";
-
+ 
   // switch buttons
   const sw=document.getElementById("switch");sw.innerHTML="";
   state.groups.filter(g=>g.cycleSlot!=null).sort((a,b)=>a.cycleSlot-b.cycleSlot).forEach(g=>{
@@ -489,14 +493,14 @@ function render(){
     b.onclick=()=>{state.manualGroup[tk]=g.id;state.activeTab=g.id;save();render();};
     sw.appendChild(b);
   });
-
+ 
   document.getElementById("todayGroupName").textContent=grp.name;
   const grpPages=grp.surahs.reduce((sum,s)=>sum+(s.p||0),0);
   document.getElementById("todayGroupMeta").textContent=grp.surahs.length+" Suren · ca. "+fmtPages(grpPages)+" Seiten";
   const note=document.getElementById("suggestNote");
   if(activeId===suggestedId){note.querySelector("span:last-child").textContent="Vorschlag nach Datum";}
   else{note.querySelector("span:last-child").textContent="Manuell gewählt · Vorschlag wäre "+getGroup(suggestedId).name;}
-
+ 
   // surah list
   const checks=state.checks[tk]||{};
   const list=document.getElementById("surahList");list.innerHTML="";
@@ -518,7 +522,7 @@ function render(){
     el.querySelector(".surah-del").onclick=(e)=>{e.stopPropagation();delSurah(grp.id,s.id);};
     list.appendChild(el);
   });
-
+ 
   // progress
   const total=grp.surahs.length;
   const done=grp.surahs.filter(s=>checks[s.id]).length;
@@ -526,7 +530,7 @@ function render(){
   document.getElementById("progFill").style.width=pct+"%";
   document.getElementById("progLabel").textContent=done+" / "+total;
   document.getElementById("progPct").textContent=pct+"%";
-
+ 
   // group tabs
   const tabs=document.getElementById("groupTabs");tabs.innerHTML="";
   state.groups.forEach(g=>{
@@ -541,7 +545,7 @@ function render(){
   addG.onclick=openGroupModal;
   tabs.appendChild(addG);
 }
-
+ 
 function toggle(surahId){
   const tk=selKey();
   if(!state.checks[tk])state.checks[tk]={};
@@ -554,7 +558,7 @@ function delSurah(groupId,surahId){
   g.surahs=g.surahs.filter(s=>s.id!==surahId);
   save();render();
 }
-
+ 
 // ---- Modals ----
 function openSurahModal(){
   // group select
@@ -589,7 +593,7 @@ function applySurahPick(){
 document.getElementById("surahPickSelect").addEventListener("change",applySurahPick);
 function openGroupModal(){document.getElementById("groupNameInput").value="";document.getElementById("groupModal").classList.add("open");}
 function closeModals(){document.querySelectorAll(".modal-bg").forEach(m=>m.classList.remove("open"));}
-
+ 
 document.getElementById("addSurahBtn").onclick=openSurahModal;
 document.getElementById("saveSurahBtn").onclick=()=>{
   const pickVal=document.getElementById("surahPickSelect").value;
@@ -621,22 +625,22 @@ document.getElementById("saveGroupBtn").onclick=()=>{
 };
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModals);
 document.querySelectorAll(".modal-bg").forEach(m=>m.onclick=e=>{if(e.target===m)closeModals();});
-
+ 
 document.getElementById("resetBtn").onclick=()=>{
   if(confirm("Häkchen für diesen Tag zurücksetzen?")){delete state.checks[selKey()];save();render();}
 };
-
+ 
 // ---- Calendar ----
 const DOW=["Mo","Di","Mi","Do","Fr","Sa","So"];
 function selectDay(d){selectedDate=new Date(d);calCursor=new Date(d);render();window.scrollTo({top:0,behavior:"smooth"});}
-
+ 
 function renderCalendar(){
   document.querySelectorAll(".cal-modes button").forEach(b=>b.classList.toggle("active",b.dataset.mode===calMode));
   const body=document.getElementById("calBody");
   if(calMode==="month")renderMonth(body);
   else renderWeek(body);
 }
-
+ 
 function renderMonth(body){
   const cur=calCursor;
   const y=cur.getFullYear(),m=cur.getMonth();
@@ -650,7 +654,7 @@ function renderMonth(body){
   document.getElementById("calTitle").innerHTML=
     '<span class="htitle">'+hMonthLabel+'</span>'+
     '<span class="gtitle">'+first.toLocaleDateString("de-CH",{month:"long",year:"numeric"})+'</span>';
-
+ 
   let startDow=(first.getDay()+6)%7; // Mon=0
   const daysInMonth=new Date(y,m+1,0).getDate();
   let html='<div class="cal-grid">';
@@ -675,7 +679,7 @@ function renderMonth(body){
     c.onclick=()=>{const[Y,M,D]=c.dataset.d.split("-").map(Number);selectDay(new Date(Y,M-1,D));};
   });
 }
-
+ 
 function renderWeek(body){
   const start=new Date(); // from today, next 14 days
   document.getElementById("calTitle").innerHTML='<span class="htitle">Nächste 14 Tage</span><span class="gtitle">ab heute</span>';
@@ -701,7 +705,7 @@ function renderWeek(body){
     c.onclick=()=>{const[Y,M,D]=c.dataset.d.split("-").map(Number);selectDay(new Date(Y,M-1,D));};
   });
 }
-
+ 
 document.getElementById("calPrev").onclick=()=>{
   if(calMode==="month"){calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()-1,1);renderCalendar();}
 };
@@ -712,8 +716,9 @@ document.querySelectorAll(".cal-modes button").forEach(b=>{
   b.onclick=()=>{calMode=b.dataset.mode;renderCalendar();};
 });
 document.getElementById("jumpToday").onclick=()=>{selectedDate=new Date();calCursor=new Date();render();};
-
+ 
 load();render();
 </script>
 </body>
 </html>
+ 
