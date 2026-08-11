@@ -9,11 +9,25 @@
 <title>Quran Revision</title>
 <style>
   :root{
+    /* Grün (Standard) */
     --bg:#0c1b18; --surface:#11302a; --surface-2:#16423a; --line:#1f5246;
-    --emerald:#2fb59a; --emerald-soft:#7fd9c6; --sand:#e8dcc3; --sand-dim:#bcae93;
-    --gold:#d9b14e; --red:#e07a6b; --text:#eef5f1; --text-dim:#8fb3a8;
+    --accent:#2fb59a; --accent-soft:#7fd9c6; --on-accent:var(--on-accent);
+    --sand:#e8dcc3; --sand-dim:#bcae93; --gold:#d9b14e; --red:#e07a6b;
+    --text:#eef5f1; --text-dim:#8fb3a8;
     --radius:16px;
     --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  body[data-theme="violett"]{
+    --bg:#150f1f; --surface:#221833; --surface-2:#2e2145; --line:#3f2f5c;
+    --accent:#a06ee0; --accent-soft:#c9a6f2; --on-accent:#1a0f2b;
+    --sand:#e6dcf0; --sand-dim:#b4a3c9; --gold:#d9b14e; --red:#e07a6b;
+    --text:#f1ecf7; --text-dim:#a494bd;
+  }
+  body[data-theme="blau"]{
+    --bg:#0b1622; --surface:#122436; --surface-2:#183247; --line:#234563;
+    --accent:#3f9fe0; --accent-soft:#8fcbf0; --on-accent:#04202f;
+    --sand:#dbe6f0; --sand-dim:#9fb3c7; --gold:#d9b14e; --red:#e07a6b;
+    --text:#eaf2f9; --text-dim:#8ba7c2;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;
@@ -25,9 +39,9 @@
   h1{font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1.1;}
   .day-head{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
   .day-badge{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:99px;}
-  .day-badge.today{background:var(--emerald);color:#06241f;}
+  .day-badge.today{background:var(--accent);color:var(--on-accent);}
   .day-badge.other{background:var(--surface-2);color:var(--sand-dim);border:1px solid var(--line);}
-  .jump-today{background:transparent;border:1px solid var(--line);color:var(--emerald-soft);font:inherit;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;cursor:pointer;}
+  .jump-today{background:transparent;border:1px solid var(--line);color:var(--accent-soft);font:inherit;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;cursor:pointer;}
   .dates{margin-top:10px;display:flex;flex-direction:column;gap:2px;}
   .date-greg{font-size:14px;color:var(--text-dim);}
   .date-hijri{font-size:15px;color:var(--gold);font-weight:600;direction:rtl;text-align:left;}
@@ -43,7 +57,7 @@
   .cal-nav:disabled{opacity:.25;}
   .cal-modes{display:flex;gap:6px;margin-bottom:12px;}
   .cal-modes button{flex:1;background:transparent;border:1px solid var(--line);color:var(--text-dim);font:inherit;font-size:13px;font-weight:600;padding:8px;border-radius:9px;cursor:pointer;}
-  .cal-modes button.active{background:var(--surface-2);border-color:var(--emerald);color:var(--text);}
+  .cal-modes button.active{background:var(--surface-2);border-color:var(--accent);color:var(--text);}
 
   .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;width:100%;}
   .cal-dow{text-align:center;font-size:10px;color:var(--text-dim);font-weight:600;padding:2px 0 4px;min-width:0;}
@@ -55,33 +69,33 @@
   .cal-cell .hd{font-size:13px;font-weight:600;line-height:1;}
   .cal-cell .gd{font-size:8px;color:var(--text-dim);line-height:1;}
   .cal-cell .stat{width:5px;height:5px;border-radius:99px;margin-top:1px;background:transparent;}
-  .cal-cell .stat.done{background:var(--emerald);}
+  .cal-cell .stat.done{background:var(--accent);}
   .cal-cell .stat.partial{background:var(--gold);}
-  .cal-cell.today{border-color:var(--emerald);}
-  .cal-cell.sel{background:var(--surface-2);border-color:var(--emerald-soft);}
-  .cal-cell.sel .hd{color:var(--emerald-soft);}
+  .cal-cell.today{border-color:var(--accent);}
+  .cal-cell.sel{background:var(--surface-2);border-color:var(--accent-soft);}
+  .cal-cell.sel .hd{color:var(--accent-soft);}
 
   .cal-week{display:flex;flex-direction:column;gap:6px;}
   .wrow{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);
     border-radius:11px;padding:11px 13px;cursor:pointer;}
-  .wrow.sel{background:var(--surface-2);border-color:var(--emerald-soft);}
-  .wrow.today{border-color:var(--emerald);}
+  .wrow.sel{background:var(--surface-2);border-color:var(--accent-soft);}
+  .wrow.today{border-color:var(--accent);}
   .wrow .wdate{flex:1;min-width:0;}
   .wrow .wh{font-size:14px;font-weight:600;}
-  .wrow.sel .wh{color:var(--emerald-soft);}
+  .wrow.sel .wh{color:var(--accent-soft);}
   .wrow .wg{font-size:12px;color:var(--text-dim);margin-top:1px;}
   .wrow .wstat{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;flex-shrink:0;}
-  .wstat.done{background:rgba(47,181,154,.15);color:var(--emerald-soft);}
+  .wstat.done{background:rgba(47,181,154,.15);color:var(--accent-soft);}
   .wstat.partial{background:rgba(217,177,78,.15);color:var(--gold);}
   .wstat.none{background:var(--surface);color:var(--text-dim);}
-  .wtoday-tag{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--emerald);}
+  .wtoday-tag{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--accent);}
   .more-btn{width:100%;background:transparent;border:1px dashed var(--line);color:var(--text-dim);
     font:inherit;font-size:13px;font-weight:600;padding:11px;border-radius:11px;cursor:pointer;margin-top:6px;}
 
   .cal-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:11px;color:var(--text-dim);}
   .cal-legend span{display:flex;align-items:center;gap:5px;}
   .cal-legend .lg{width:8px;height:8px;border-radius:99px;}
-  .cal-legend .lg.done{background:var(--emerald);}
+  .cal-legend .lg.done{background:var(--accent);}
   .cal-legend .lg.partial{background:var(--gold);}
   .cal-legend .lg.none{background:var(--line);}
 
@@ -106,20 +120,20 @@
   .switch{display:flex;gap:6px;flex-wrap:wrap;}
   .switch button{background:transparent;border:1px solid var(--line);color:var(--text-dim);
     font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border-radius:99px;cursor:pointer;}
-  .switch button.active{background:var(--emerald);border-color:var(--emerald);color:#06241f;}
+  .switch button.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
   .suggest-note{font-size:12px;color:var(--sand-dim);margin-top:10px;display:flex;align-items:center;gap:6px;}
   .dot{width:6px;height:6px;border-radius:99px;background:var(--gold);flex-shrink:0;}
 
   .progress-wrap{margin:14px 0 4px;}
   .progress-bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--emerald-soft));border-radius:99px;transition:width .3s;width:0;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));border-radius:99px;transition:width .3s;width:0;}
   .progress-text{font-size:12px;color:var(--text-dim);margin-top:7px;display:flex;justify-content:space-between;}
 
   .gblock{margin-top:18px;}
   .gblock-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px;gap:8px;}
   .gblock-name{font-size:16px;font-weight:700;}
   .gblock-meta{font-size:12px;color:var(--text-dim);}
-  .edit-toggle{background:none;border:none;color:var(--emerald-soft);font:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:2px 0;}
+  .edit-toggle{background:none;border:none;color:var(--accent-soft);font:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:2px 0;}
 
   .surah-list{display:flex;flex-direction:column;gap:8px;}
   .surah{display:flex;flex-direction:column;align-items:stretch;background:var(--surface);
@@ -128,12 +142,12 @@
   .surah-main{display:flex;align-items:center;gap:11px;cursor:pointer;}
   .check{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;
     display:flex;align-items:center;justify-content:center;}
-  .surah.done .check{background:var(--emerald);border-color:var(--emerald);}
+  .surah.done .check{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
   .check svg{width:14px;height:14px;opacity:0;}
   .surah.done .check svg{opacity:1;}
   .surah-info{flex:1;min-width:0;}
   .surah-name{font-size:15px;font-weight:600;}
-  .surah.done .surah-name{color:var(--emerald-soft);}
+  .surah.done .surah-name{color:var(--accent-soft);}
   .surah-num{font-size:12px;color:var(--text-dim);margin-top:1px;}
   .surah-num .mtag{color:var(--gold);font-weight:600;}
   .surah-ar{font-size:17px;color:var(--sand);direction:rtl;font-weight:500;flex-shrink:0;}
@@ -146,7 +160,7 @@
   .method-row{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(47,181,154,.2);}
   .mbtn{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--text-dim);
     font:inherit;font-size:12px;font-weight:600;padding:8px 6px;border-radius:9px;cursor:pointer;}
-  .mbtn.active{background:var(--emerald);border-color:var(--emerald);color:#06241f;}
+  .mbtn.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
 
   .add-btn{width:100%;background:transparent;border:1.5px dashed var(--line);color:var(--text-dim);
     font:inherit;font-size:14px;font-weight:600;padding:13px;border-radius:12px;cursor:pointer;margin-top:9px;}
@@ -155,13 +169,30 @@
   .section-head h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);font-weight:600;}
   .grow{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);
     border-radius:12px;padding:11px 13px;margin-bottom:7px;}
-  .grow .gname{flex:1;min-width:0;font-size:15px;font-weight:600;}
-  .grow .gcount{font-size:11px;color:var(--text-dim);background:var(--bg);padding:2px 8px;border-radius:99px;flex-shrink:0;}
+  .grow .ginfo{flex:1;min-width:0;}
+  .grow .gname{font-size:15px;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .grow .gactive{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);background:var(--surface-2);padding:2px 7px;border-radius:99px;}
+  .grow .gprog{display:flex;align-items:center;gap:8px;margin-top:6px;}
+  .grow .gbar{flex:1;height:5px;background:var(--bg);border-radius:99px;overflow:hidden;min-width:40px;}
+  .grow .gbar-fill{height:100%;border-radius:99px;transition:width .3s;background:var(--line);}
+  .grow .gbar-fill.done{background:var(--accent);}
+  .grow .gbar-fill.partial{background:var(--gold);}
+  .grow .gprog-txt{font-size:11px;font-weight:600;color:var(--text-dim);flex-shrink:0;}
+  .grow .gprog-txt.done{color:var(--accent-soft);}
+  .grow .gprog-txt.partial{color:var(--gold);}
   .add-group-btn{width:100%;background:transparent;border:1.5px dashed var(--line);color:var(--sand-dim);
     font:inherit;font-size:14px;font-weight:600;padding:13px;border-radius:12px;cursor:pointer;margin-top:4px;}
 
   .empty{text-align:center;color:var(--text-dim);font-size:13px;padding:18px 10px;line-height:1.5;
     border:1px dashed var(--line);border-radius:12px;}
+  .theme-row{display:flex;gap:8px;}
+  .theme-row button{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);
+    color:var(--text-dim);font:inherit;font-size:13px;font-weight:600;padding:12px 6px;border-radius:11px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s;}
+  .theme-row button.active{border-color:var(--accent);color:var(--text);background:var(--surface-2);}
+  .tdot{width:12px;height:12px;border-radius:99px;flex-shrink:0;}
+
   .reset-row{margin-top:26px;text-align:center;}
   .reset-row button{background:none;border:none;color:var(--text-dim);font:inherit;font-size:13px;cursor:pointer;opacity:.6;}
 
@@ -178,18 +209,18 @@
   .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
   .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);
     font:inherit;font-size:15px;padding:13px;border-radius:11px;}
-  .field input:focus,.field select:focus{outline:none;border-color:var(--emerald);}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--accent);}
   .seg{display:flex;gap:6px;}
   .seg button{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--text-dim);
     font:inherit;font-size:13px;font-weight:600;padding:11px 4px;border-radius:10px;cursor:pointer;}
-  .seg button.active{background:var(--surface-2);border-color:var(--emerald);color:var(--text);}
+  .seg button.active{background:var(--surface-2);border-color:var(--accent);color:var(--text);}
   .row2{display:flex;gap:10px;}
   .row2 .field{flex:1;}
   .hint{font-size:11px;color:var(--sand-dim);margin-top:5px;line-height:1.4;}
   .hint.warn{color:var(--red);}
   .modal-actions{display:flex;gap:10px;margin-top:6px;}
   .btn{flex:1;font:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:12px;cursor:pointer;border:none;}
-  .btn-primary{background:var(--emerald);color:#06241f;}
+  .btn-primary{background:var(--accent);color:var(--on-accent);}
   .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text-dim);}
   .btn-danger{background:transparent;border:1px solid rgba(224,122,107,.5);color:var(--red);}
 
@@ -197,8 +228,8 @@
   .range-row{display:flex;align-items:center;gap:8px;}
   .range-row select{flex:1;min-width:0;}
   .range-sep{font-size:13px;color:var(--text-dim);flex-shrink:0;}
-  .range-apply{width:100%;margin-top:8px;background:var(--surface-2);border:1px solid var(--emerald);
-    color:var(--emerald-soft);font:inherit;font-size:13px;font-weight:600;padding:10px;border-radius:9px;cursor:pointer;}
+  .range-apply{width:100%;margin-top:8px;background:var(--surface-2);border:1px solid var(--accent);
+    color:var(--accent-soft);font:inherit;font-size:13px;font-weight:600;padding:10px;border-radius:9px;cursor:pointer;}
   .multi-list{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:11px;
     margin-top:8px;background:var(--bg);-webkit-overflow-scrolling:touch;}
   .mitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(31,82,70,.5);cursor:pointer;}
@@ -206,14 +237,14 @@
   .mitem.on{background:rgba(47,181,154,.1);}
   .mbox{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex-shrink:0;
     display:flex;align-items:center;justify-content:center;}
-  .mitem.on .mbox{background:var(--emerald);border-color:var(--emerald);}
+  .mitem.on .mbox{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
   .mbox svg{width:12px;height:12px;opacity:0;}
   .mitem.on .mbox svg{opacity:1;}
   .mitem .mname{flex:1;min-width:0;font-size:14px;}
   .mitem .msub{display:block;font-size:10px;color:var(--text-dim);margin-top:1px;font-weight:400;}
-  .mitem.on .mname{color:var(--emerald-soft);font-weight:600;}
+  .mitem.on .mname{color:var(--accent-soft);font-weight:600;}
   .mitem .mar{font-size:15px;color:var(--sand);direction:rtl;flex-shrink:0;}
-  .mitem .mord{font-size:10px;font-weight:700;color:var(--emerald);background:var(--surface-2);
+  .mitem .mord{font-size:10px;font-weight:700;color:var(--accent);background:var(--surface-2);
     padding:2px 7px;border-radius:99px;flex-shrink:0;}
   .multi-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;}
   .clear-sel{background:none;border:none;color:var(--text-dim);font:inherit;font-size:12px;
@@ -280,6 +311,13 @@
   <div class="section-head"><h2>Gruppen verwalten</h2></div>
   <div id="groupManager"></div>
   <button class="add-group-btn" id="addGroupBtn">+ Neue Gruppe</button>
+
+  <div class="section-head"><h2>Farbschema</h2></div>
+  <div class="theme-row" id="themeRow">
+    <button data-theme="gruen"><span class="tdot" style="background:#2fb59a"></span>Grün</button>
+    <button data-theme="violett"><span class="tdot" style="background:#a06ee0"></span>Violett</button>
+    <button data-theme="blau"><span class="tdot" style="background:#3f9fe0"></span>Blau</button>
+  </div>
 
   <div class="reset-row">
     <button id="resetBtn">Häkchen für diesen Tag zurücksetzen</button>
@@ -389,7 +427,7 @@
   </div>
 </div>
 <script>
-const CHECK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="#06241f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const CHECK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
 // [nr, name, arabisch, seiten, verse, ort: M=mekkanisch, D=medinensisch]
 const SURAH_DB=[
@@ -670,10 +708,20 @@ function renderDay(){
 function renderGroupManager(){
   const box=document.getElementById("groupManager");box.innerHTML="";
   if(!state.groups.length){box.innerHTML='<div class="empty">Keine Gruppen. Lege unten eine an.</div>';return;}
+  const checks=state.checks[selKey()]||{};
+  const activeIds=activeGroupIdsFor(selectedDate);
   state.groups.forEach((g,i)=>{
+    const done=g.surahs.filter(s=>checks[s.id]).length;
+    const tot=g.surahs.length;
+    const pct=tot?Math.round(done/tot*100):0;
+    const isActive=activeIds.includes(g.id);
+    const stCls=!tot?"none":(done===0?"none":(done>=tot?"done":"partial"));
     const row=document.createElement("div");row.className="grow";
-    row.innerHTML='<div class="gname">'+esc(g.name)+'</div>'+
-      '<span class="gcount">'+g.surahs.length+'</span>'+
+    row.innerHTML='<div class="ginfo">'+
+        '<div class="gname">'+esc(g.name)+(isActive?' <span class="gactive">heute aktiv</span>':'')+'</div>'+
+        '<div class="gprog"><div class="gbar"><div class="gbar-fill '+stCls+'" style="width:'+pct+'%"></div></div>'+
+        '<span class="gprog-txt '+stCls+'">'+done+'/'+tot+'</span></div>'+
+      '</div>'+
       '<div class="surah-tools">'+
       '<button class="stool up"'+(i===0?" disabled":"")+'>↑</button>'+
       '<button class="stool down"'+(i===state.groups.length-1?" disabled":"")+'>↓</button>'+
@@ -1080,11 +1128,26 @@ document.getElementById("calNext").onclick=()=>{if(calMode==="month"){calCursor=
 document.querySelectorAll(".cal-modes button").forEach(b=>b.onclick=()=>{calMode=b.dataset.mode;renderCalendar();});
 document.getElementById("jumpToday").onclick=()=>{selectedDate=new Date();calCursor=new Date();render();};
 document.getElementById("missedMore").onclick=()=>{missedExpanded=!missedExpanded;renderMissed();};
+// ---- Farbschema ----
+const THEME_COLORS={gruen:"#0c1b18",violett:"#150f1f",blau:"#0b1622"};
+function applyTheme(t){
+  const th=THEME_COLORS[t]?t:"gruen";
+  if(th==="gruen")document.body.removeAttribute("data-theme");
+  else document.body.setAttribute("data-theme",th);
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute("content",THEME_COLORS[th]);
+  document.querySelectorAll("#themeRow button").forEach(b=>b.classList.toggle("active",b.dataset.theme===th));
+  state.theme=th;
+}
+document.querySelectorAll("#themeRow button").forEach(b=>{
+  b.onclick=()=>{applyTheme(b.dataset.theme);save();};
+});
+
 document.getElementById("resetBtn").onclick=()=>{
   askConfirm("Häkchen für diesen Tag zurücksetzen?",()=>{delete state.checks[selKey()];save();render();},"Zurücksetzen");
 };
 
-load();render();
+load();applyTheme(state.theme);render();
 </script>
 </body>
 </html>
