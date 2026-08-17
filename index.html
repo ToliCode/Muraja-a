@@ -269,6 +269,45 @@
   .wd-pick button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
   .wd-pick .wpar{font-size:9px;opacity:.75;direction:rtl;font-weight:400;}
 
+  /* Fokus */
+  .focus-box{background:rgba(217,177,78,.07);border:1px solid rgba(217,177,78,.35);
+    border-radius:var(--radius);padding:14px;margin-bottom:16px;}
+  .focus-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .focus-head h3{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);
+    font-weight:700;display:flex;align-items:center;gap:8px;}
+  .fcnt{background:var(--gold);color:#2b1f05;font-size:11px;padding:1px 8px;border-radius:99px;letter-spacing:0;}
+  .focus-add-sm{background:transparent;border:1px solid rgba(217,177,78,.4);color:var(--gold);
+    font:inherit;font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;cursor:pointer;}
+  .fitem{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:8px;}
+  .fitem:last-child{margin-bottom:0;}
+  .ftop{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .ftitle{font-size:15px;font-weight:700;color:var(--text);}
+  .fleft{font-size:11px;font-weight:600;color:var(--gold);flex-shrink:0;}
+  .fcontent{font-size:12px;color:var(--text-dim);margin-top:4px;line-height:1.45;}
+  .fcounts{display:flex;gap:6px;margin-top:10px;}
+  .fbtn{flex:1;background:var(--surface);border:1px solid var(--line);color:var(--text-dim);
+    font:inherit;font-size:12px;font-weight:600;padding:9px 6px;border-radius:9px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;}
+  .fbtn.has{border-color:var(--gold);color:var(--gold);background:rgba(217,177,78,.1);}
+  .fbtn .fnum{background:var(--gold);color:#2b1f05;font-size:10px;font-weight:700;
+    padding:1px 6px;border-radius:99px;}
+  .fminus{background:var(--surface);border:1px solid var(--line);color:var(--text-dim);
+    width:34px;flex-shrink:0;border-radius:9px;font-size:15px;cursor:pointer;}
+  .fminus:disabled{opacity:.25;}
+  .ftotal{font-size:11px;color:var(--text-dim);margin-top:7px;}
+
+  .fmode{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .fmode button{background:var(--bg);border:1px solid var(--line);color:var(--text-dim);
+    font:inherit;font-size:13px;font-weight:600;padding:11px 6px;border-radius:10px;cursor:pointer;}
+  .fmode button.active{background:var(--surface-2);border-color:var(--accent);color:var(--text);}
+  .frow{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:11px 13px;margin-bottom:7px;}
+  .frow .finfo{flex:1;min-width:0;}
+  .frow .fname{font-size:15px;font-weight:600;}
+  .frow .fmeta{font-size:11px;color:var(--gold);margin-top:3px;}
+  .frow .fsub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+  .frow.done-f{opacity:.55;}
+
   .group-reset{width:100%;background:transparent;border:1px solid rgba(224,122,107,.35);color:var(--red);
     font:inherit;font-size:12px;font-weight:600;padding:9px;border-radius:10px;cursor:pointer;margin-top:9px;}
 </style>
@@ -312,6 +351,14 @@
     <button class="more-btn" id="missedMore" style="display:none;">Mehr anzeigen</button>
   </div>
 
+  <div class="focus-box" id="focusBox" style="display:none;">
+    <div class="focus-head">
+      <h3>Fokus <span class="fcnt" id="focusCount">0</span></h3>
+      <button class="focus-add-sm" id="focusAddTop">+ Neu</button>
+    </div>
+    <div id="focusList"></div>
+  </div>
+
   <div class="today-card">
     <div class="today-top">
       <div class="today-label" id="todayLabel">An diesem Tag</div>
@@ -332,6 +379,10 @@
   <div class="section-head"><h2>Gruppen verwalten</h2></div>
   <div id="groupManager"></div>
   <button class="add-group-btn" id="addGroupBtn">+ Neue Gruppe</button>
+
+  <div class="section-head"><h2>Fokus verwalten</h2></div>
+  <div id="focusManager"></div>
+  <button class="add-group-btn" id="addFocusBtn">+ Neuer Fokus</button>
 
   <div class="section-head"><h2>Farbschema</h2></div>
   <div class="theme-row" id="themeRow">
@@ -416,6 +467,49 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" data-close>Abbrechen</button>
       <button class="btn btn-primary" id="saveSurahBtn">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Focus Modal -->
+<div class="modal-bg" id="focusModal">
+  <div class="modal">
+    <h3 id="focusModalTitle">Neuer Fokus</h3>
+    <div class="field">
+      <label>Titel (optional)</label>
+      <input type="text" id="focusTitleInput" placeholder="z. B. Al-Waqi'ah vertiefen" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Suren auswählen</label>
+      <input type="text" id="focusSearch" placeholder="Suchen…" autocomplete="off">
+      <div class="multi-list" id="focusMultiList"></div>
+      <div class="multi-foot">
+        <span class="hint" id="focusSelHint"></span>
+        <button class="clear-sel" id="focusClearBtn">Auswahl leeren</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Zeitraum</label>
+      <div class="fmode" id="focusModeSeg">
+        <button data-mode="today">Nur heute</button>
+        <button data-mode="until" class="active">Bis Datum</button>
+        <button data-mode="weekdays">Wochentage</button>
+        <button data-mode="open">Ohne Ende</button>
+      </div>
+    </div>
+    <div class="field" id="focusUntilField">
+      <label>Enddatum</label>
+      <input type="date" id="focusUntilInput">
+    </div>
+    <div class="field" id="focusDaysField" style="display:none;">
+      <label>An welchen Wochentagen?</label>
+      <div class="wd-pick" id="focusWdPick"></div>
+    </div>
+    <div class="hint" id="focusHint"></div>
+    <div class="hint warn" id="focusError" style="margin-bottom:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close>Abbrechen</button>
+      <button class="btn btn-primary" id="saveFocusBtn">Erstellen</button>
     </div>
   </div>
 </div>
@@ -516,6 +610,8 @@ function load(){
   if(!state.groups)state.groups=structuredClone(DEFAULT_STATE.groups);
   if(!state.checks)state.checks={};
   if(!state.dayGroups)state.dayGroups={};
+  if(!state.focus)state.focus=[];
+  if(!state.focusLog)state.focusLog={};
   // Migration: Gruppen ohne Wochentage bekommen das bisherige Alternieren
   const n=state.groups.length;
   state.groups.forEach((g,i)=>{
@@ -574,6 +670,58 @@ function activeGroupIdsFor(d){
   return groupsForWeekday(d.getDay()).map(g=>g.id);
 }
 function isCustomDay(d){return keyOf(d) in state.dayGroups;}
+
+// ---- Fokus ----
+function focusActiveOn(f,d){
+  const k=keyOf(d);
+  if(f.mode==="today")return k===f.date;
+  if(f.mode==="until")return k>=f.start&&k<=f.date;
+  if(f.mode==="weekdays")return k>=f.start&&Array.isArray(f.days)&&f.days.includes(d.getDay());
+  return k>=f.start; // open
+}
+function focusFor(d){return state.focus.filter(f=>focusActiveOn(f,d));}
+function focusLog(fid,d){
+  const k=keyOf(d);
+  return (state.focusLog[k]&&state.focusLog[k][fid])||{read:0,memo:0};
+}
+function bumpFocus(fid,kind,delta){
+  const k=selKey();
+  if(!state.focusLog[k])state.focusLog[k]={};
+  if(!state.focusLog[k][fid])state.focusLog[k][fid]={read:0,memo:0};
+  const e=state.focusLog[k][fid];
+  e[kind]=Math.max(0,(e[kind]||0)+delta);
+  if(!e.read&&!e.memo)delete state.focusLog[k][fid];
+  if(!Object.keys(state.focusLog[k]).length)delete state.focusLog[k];
+  save();render();
+}
+function focusTotals(fid){
+  let read=0,memo=0,days=0;
+  Object.keys(state.focusLog).forEach(k=>{
+    const e=state.focusLog[k][fid];
+    if(e){read+=e.read||0;memo+=e.memo||0;days++;}
+  });
+  return{read,memo,days};
+}
+function focusContentLabel(f){
+  return f.items.map(x=>x.name+(x.vFrom?" "+x.vFrom+"–"+x.vTo:"")).join(", ");
+}
+function focusRangeLabel(f,d){
+  if(f.mode==="today")return "nur "+parseKey(f.date).toLocaleDateString("de-CH",{day:"numeric",month:"short"});
+  if(f.mode==="until"){
+    const end=parseKey(f.date),today=startOfDay(d||new Date());
+    const left=Math.round((startOfDay(end)-today)/86400000);
+    if(left<0)return "beendet";
+    return left===0?"letzter Tag":"noch "+left+" Tag"+(left===1?"":"e");
+  }
+  if(f.mode==="weekdays")return (f.days||[]).slice().sort((a,b)=>a-b).map(k=>WD[k].kurz).join(", ");
+  return "ohne Ende";
+}
+function focusExpired(f){
+  const t=todayKey();
+  if(f.mode==="today")return f.date<t;
+  if(f.mode==="until")return f.date<t;
+  return false;
+}
 function daysLabel(g){
   if(!Array.isArray(g.days)||!g.days.length)return "keinem Tag zugeordnet";
   if(g.days.length===7)return "täglich";
@@ -622,8 +770,69 @@ function render(){
 
   renderCalendar();
   renderMissed();
+  renderFocus();
   renderDay();
   renderGroupManager();
+  renderFocusManager();
+}
+
+function renderFocus(){
+  const box=document.getElementById("focusBox");
+  const list=document.getElementById("focusList");
+  const active=focusFor(selectedDate);
+  if(!active.length){box.style.display="none";return;}
+  box.style.display="";
+  document.getElementById("focusCount").textContent=active.length;
+  list.innerHTML="";
+  active.forEach(f=>{
+    const lg=focusLog(f.id,selectedDate);
+    const tot=focusTotals(f.id);
+    const el=document.createElement("div");el.className="fitem";
+    el.innerHTML=
+      '<div class="ftop"><span class="ftitle">'+esc(f.title||focusContentLabel(f))+'</span>'+
+      '<span class="fleft">'+esc(focusRangeLabel(f,selectedDate))+'</span></div>'+
+      (f.title?'<div class="fcontent">'+esc(focusContentLabel(f))+'</div>':'')+
+      '<div class="fcounts">'+
+        '<button class="fminus" data-k="read" '+(lg.read?'':'disabled')+'>−</button>'+
+        '<button class="fbtn'+(lg.read?' has':'')+'" data-k="read">Gelesen'+(lg.read?'<span class="fnum">'+lg.read+'</span>':'')+'</button>'+
+        '<button class="fbtn'+(lg.memo?' has':'')+'" data-k="memo">Auswendig'+(lg.memo?'<span class="fnum">'+lg.memo+'</span>':'')+'</button>'+
+        '<button class="fminus" data-k="memo" '+(lg.memo?'':'disabled')+'>−</button>'+
+      '</div>'+
+      (tot.read||tot.memo?'<div class="ftotal">Gesamt: '+tot.read+'× gelesen · '+tot.memo+'× auswendig · an '+tot.days+' Tag(en)</div>':'');
+    el.querySelectorAll(".fbtn").forEach(b=>b.onclick=()=>bumpFocus(f.id,b.dataset.k,1));
+    el.querySelectorAll(".fminus").forEach(b=>{if(!b.disabled)b.onclick=()=>bumpFocus(f.id,b.dataset.k,-1);});
+    list.appendChild(el);
+  });
+}
+
+function renderFocusManager(){
+  const box=document.getElementById("focusManager");box.innerHTML="";
+  if(!state.focus.length){
+    box.innerHTML='<div class="empty">Noch kein Fokus angelegt.<br>Damit kannst du eine Portion zusätzlich zur Wiederholung vertiefen.</div>';
+    return;
+  }
+  state.focus.forEach(f=>{
+    const exp=focusExpired(f);
+    const tot=focusTotals(f.id);
+    const row=document.createElement("div");row.className="frow"+(exp?" done-f":"");
+    row.innerHTML='<div class="finfo">'+
+        '<div class="fname">'+esc(f.title||focusContentLabel(f))+'</div>'+
+        '<div class="fmeta">'+esc(exp?"beendet":focusRangeLabel(f))+'</div>'+
+        '<div class="fsub">'+esc(focusContentLabel(f))+
+          (tot.read||tot.memo?' · '+tot.read+'× gel., '+tot.memo+'× ausw.':'')+'</div>'+
+      '</div>'+
+      '<div class="surah-tools">'+
+      '<button class="stool ren">✎</button>'+
+      '<button class="stool del">×</button></div>';
+    row.querySelector(".ren").onclick=()=>openFocusModal(f.id);
+    row.querySelector(".del").onclick=()=>askConfirm("Fokus „"+(f.title||focusContentLabel(f))+"“ löschen?",()=>{
+      state.focus=state.focus.filter(x=>x.id!==f.id);
+      Object.keys(state.focusLog).forEach(k=>{delete state.focusLog[k][f.id];
+        if(!Object.keys(state.focusLog[k]).length)delete state.focusLog[k];});
+      save();render();
+    });
+    box.appendChild(row);
+  });
 }
 
 function renderDay(){
@@ -1189,9 +1398,105 @@ document.getElementById("saveGroupBtn").onclick=()=>{
 };
 document.getElementById("addGroupBtn").onclick=()=>openGroupModal(null);
 
+// ---- Fokus-Modal ----
+let focusSel=[],focusMode="until",focusWd=[],editingFocusId=null;
+function renderFocusMulti(){
+  const q=document.getElementById("focusSearch").value.trim().toLowerCase();
+  const box=document.getElementById("focusMultiList");box.innerHTML="";
+  SURAH_DB.forEach(s=>{
+    const n=s[0],name=s[1],ar=s[2],ayat=s[4],place=s[5];
+    if(q&&!(name.toLowerCase().includes(q)||ar.includes(q)||String(n)===q))return;
+    const pos=focusSel.indexOf(n),on=pos>=0;
+    const row=document.createElement("div");row.className="mitem"+(on?" on":"");
+    row.innerHTML='<div class="mbox">'+CHECK_SVG+'</div>'+
+      '<span class="mname">'+n+'. '+esc(name)+'<span class="msub">'+ayat+' Verse · '+placeLabel(place,true)+'</span></span>'+
+      (on?'<span class="mord">'+(pos+1)+'</span>':'')+
+      '<span class="mar">'+esc(ar)+'</span>';
+    row.onclick=()=>{const i=focusSel.indexOf(n);if(i>=0)focusSel.splice(i,1);else focusSel.push(n);
+      renderFocusMulti();updateFocusHint();};
+    box.appendChild(row);
+  });
+  if(!box.children.length)box.innerHTML='<div style="padding:14px;text-align:center;color:var(--text-dim);font-size:13px;">Nichts gefunden</div>';
+}
+function renderFocusWd(){
+  const box=document.getElementById("focusWdPick");box.innerHTML="";
+  WD.forEach(w=>{
+    const b=document.createElement("button");
+    b.className=focusWd.includes(w.k)?"on":"";
+    b.innerHTML='<span>'+w.kurz+'</span><span class="wpar">'+w.ar+'</span>';
+    b.onclick=()=>{const i=focusWd.indexOf(w.k);if(i>=0)focusWd.splice(i,1);else focusWd.push(w.k);
+      renderFocusWd();updateFocusHint();};
+    box.appendChild(b);
+  });
+}
+function updateFocusHint(){
+  const h=document.getElementById("focusSelHint");
+  if(!focusSel.length)h.textContent="Noch nichts ausgewählt.";
+  else{
+    const list=focusSel.map(surahByNum).filter(Boolean);
+    h.textContent=list.length+" ausgewählt · "+list.reduce((s,x)=>s+x.ayat,0)+" Verse";
+  }
+  const fh=document.getElementById("focusHint");
+  if(focusMode==="today")fh.textContent="Gilt nur für heute.";
+  else if(focusMode==="until")fh.textContent="Läuft ab heute bis zum gewählten Datum.";
+  else if(focusMode==="weekdays")fh.textContent=focusWd.length?("Erscheint jede Woche an: "+focusWd.slice().sort((a,b)=>a-b).map(k=>WD[k].de).join(", ")):"Bitte Wochentage wählen.";
+  else fh.textContent="Läuft, bis du ihn löschst.";
+}
+function setFocusMode(m){
+  focusMode=m;
+  document.querySelectorAll("#focusModeSeg button").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
+  document.getElementById("focusUntilField").style.display=(m==="until")?"":"none";
+  document.getElementById("focusDaysField").style.display=(m==="weekdays")?"":"none";
+  updateFocusHint();
+}
+function openFocusModal(fid){
+  editingFocusId=fid||null;
+  const f=fid?state.focus.find(x=>x.id===fid):null;
+  document.getElementById("focusModalTitle").textContent=f?"Fokus bearbeiten":"Neuer Fokus";
+  document.getElementById("saveFocusBtn").textContent=f?"Speichern":"Erstellen";
+  document.getElementById("focusError").textContent="";
+  document.getElementById("focusSearch").value="";
+  document.getElementById("focusTitleInput").value=f?(f.title||""):"";
+  focusSel=f?f.items.filter(x=>x.n).map(x=>x.n):[];
+  focusWd=f&&Array.isArray(f.days)?f.days.slice():[];
+  const def=addDays(new Date(),6);
+  document.getElementById("focusUntilInput").value=(f&&f.date)?f.date:keyOf(def);
+  setFocusMode(f?f.mode:"until");
+  renderFocusMulti();renderFocusWd();updateFocusHint();
+  document.getElementById("focusModal").classList.add("open");
+}
+document.querySelectorAll("#focusModeSeg button").forEach(b=>b.onclick=()=>setFocusMode(b.dataset.mode));
+document.getElementById("focusSearch").addEventListener("input",renderFocusMulti);
+document.getElementById("focusClearBtn").onclick=()=>{focusSel=[];renderFocusMulti();updateFocusHint();};
+document.getElementById("addFocusBtn").onclick=()=>openFocusModal(null);
+document.getElementById("focusAddTop").onclick=()=>openFocusModal(null);
+document.getElementById("saveFocusBtn").onclick=()=>{
+  const err=document.getElementById("focusError");err.textContent="";
+  if(!focusSel.length){err.textContent="Bitte mindestens eine Surah auswählen.";return;}
+  if(focusMode==="weekdays"&&!focusWd.length){err.textContent="Bitte Wochentage wählen.";return;}
+  const until=document.getElementById("focusUntilInput").value;
+  if(focusMode==="until"){
+    if(!until){err.textContent="Bitte ein Enddatum wählen.";return;}
+    if(until<todayKey()){err.textContent="Das Enddatum liegt in der Vergangenheit.";return;}
+  }
+  const items=focusSel.map(surahByNum).filter(Boolean)
+    .map(s=>({n:s.n,name:s.name,ar:s.ar,p:s.p,vFrom:null,vTo:null}));
+  const title=document.getElementById("focusTitleInput").value.trim();
+  const date=focusMode==="today"?todayKey():(focusMode==="until"?until:null);
+  if(editingFocusId){
+    const f=state.focus.find(x=>x.id===editingFocusId);
+    if(f){f.title=title;f.items=items;f.mode=focusMode;f.days=focusWd.slice().sort((a,b)=>a-b);f.date=date;}
+  }else{
+    state.focus.push({id:"f"+Date.now()+Math.random().toString(36).slice(2,5),
+      title,items,mode:focusMode,days:focusWd.slice().sort((a,b)=>a-b),
+      start:todayKey(),date});
+  }
+  editingFocusId=null;save();closeModals();render();
+};
+
 function closeModals(){
   document.querySelectorAll(".modal-bg").forEach(m=>m.classList.remove("open"));
-  editingSurah=null;editingGroupId=null;
+  editingSurah=null;editingGroupId=null;editingFocusId=null;
 }
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModals);
 document.querySelectorAll(".modal-bg").forEach(m=>m.onclick=e=>{if(e.target===m)closeModals();});
